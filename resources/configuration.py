@@ -10,7 +10,7 @@ class ConfigurationsApi(Resource):
     def get(self):
         configurations = Configuration.objects().to_json()
         return Response(configurations, mimetype="application/json", status=200)
-    @jwt_required
+    #@jwt_required
     def post(self):
         try:
             user_id = get_jwt_identity()
@@ -25,7 +25,7 @@ class ConfigurationsApi(Resource):
         except (FieldDoesNotExist, ValidationError):
             raise SchemaValidationError
         except NotUniqueError:
-            raise MovieAlreadyExistsError
+            raise ConfigurationAlreadyExistsError
         except Exception as e:
             raise InternalServerError
     
@@ -41,7 +41,7 @@ class ConfigurationApi(Resource):
         except InvalidQueryError:
             raise SchemaValidationError
         except DoesNotExist:
-            raise UpdatingMovieError
+            raise UpdatingConfigurationError
         except Exception:
             raise InternalServerError 
     
@@ -53,7 +53,7 @@ class ConfigurationApi(Resource):
             configuration.delete()
             return '', 200
         except DoesNotExist:
-            raise DeletingMovieError
+            raise DeletingConfigurationError
         except Exception:
             raise InternalServerError
 
@@ -62,6 +62,6 @@ class ConfigurationApi(Resource):
             configurations = Configuration.objects.get(id=id).to_json()
             return Response(configurations, mimetype="application/json", status=200)
         except DoesNotExist:
-            raise MovieNotExistsError
+            raise ConfigurationNotExistsError
         except Exception:
             raise InternalServerError

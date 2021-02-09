@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: node-user-service-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    #- host: stupid-simple-kubernetes.eastus2.cloudapp.azure.com
+    - host: 
+      http:
+        paths:
+          - backend:
+              serviceName: config-service
+              servicePort: 5050
+            path: /user-api(/|$)(.*)
+          - backend:
+              serviceName: hello-service
+              servicePort: 5000
+            path: /user-api(/|$)(.*)
