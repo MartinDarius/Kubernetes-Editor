@@ -1,10 +1,12 @@
 #~=configuration-bag/database/models.py
 from .db import db
 from flask_bcrypt import generate_password_hash, check_password_hash
-
+# pylint: disable=no-member
 class Configuration(db.Document):
     name = db.StringField(required=True, unique=True)
-    specifications = db.ListField(db.StringField(), required=True)
+    #specifications = db.ListField(db.StringField(), required=True)
+    model = db.StringField(required=True, unique=True)
+    
     added_by=db.ReferenceField('User')
     
 class User(db.Document):

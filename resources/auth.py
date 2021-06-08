@@ -1,4 +1,4 @@
-from flask import Response, request
+from flask import Response, request, json
 from flask_jwt_extended import create_access_token
 from database.models import User
 from flask_restful import Resource
@@ -6,6 +6,8 @@ import datetime
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist
 from resources.errors import SchemaValidationError, EmailAlreadyExistsError, UnauthorizedError, InternalServerError
 
+# pylint: disable=no-member
+# pylint: disable=unused-variable
 
 class SignupApi(Resource):
     def post(self):
@@ -34,7 +36,17 @@ class LoginApi(Resource):
         
             expires = datetime.timedelta(days=7)
             access_token = create_access_token(identity=str(user.id), expires_delta=expires)
-            return {'token': access_token}, 200
+            token={"token":access_token}
+                        
+            response= Response(json.dumps(token), mimetype="application/json", status=200)
+            
+            # response.headers['Access-Control-Allow-Origin'] = '*'
+            # response.headers['Access-Control-Allow-Headers'] = '*'
+            # response.headers['Access-Control-Allow-Credentials'] = 'true'
+            # response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, HEAD'
+            # response.headers['Access-Control-Max-Age'] = '1209600'
+
+            return {"token":access_token}, 200
         except (UnauthorizedError, DoesNotExist):
             raise UnauthorizedError
         except Exception as e:

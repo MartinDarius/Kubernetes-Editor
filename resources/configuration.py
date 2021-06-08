@@ -5,12 +5,27 @@ from database.models import Configuration, User
 from flask_restful import Resource
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
 from resources.errors import SchemaValidationError, ConfigurationAlreadyExistsError, InternalServerError, UpdatingConfigurationError, DeletingConfigurationError, ConfigurationNotExistsError
+# pylint: disable=no-member
+# pylint: disable=unused-variable
+import json
+
+
 
 class ConfigurationsApi(Resource):
+    @jwt_required()
     def get(self):
-        configurations = Configuration.objects().to_json()
-        return Response(configurations, mimetype="application/json", status=200)
-    #@jwt_required
+        user_id = get_jwt_identity()
+        
+        configurations = Configuration.objects().filter(added_by=user_id).to_json()
+
+        response= Response(configurations, mimetype="application/json", status=200)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Headers'] = '*'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, HEAD'
+        response.headers['Access-Control-Max-Age'] = '1209600'
+        return response
+    @jwt_required()
     def post(self):
         try:
             user_id = get_jwt_identity()
@@ -30,7 +45,7 @@ class ConfigurationsApi(Resource):
             raise InternalServerError
     
 class ConfigurationApi(Resource):
-    @jwt_required
+    @jwt_required()
     def put(self, id):
         try:
             user_id = get_jwt_identity()
@@ -45,7 +60,7 @@ class ConfigurationApi(Resource):
         except Exception:
             raise InternalServerError 
     
-    @jwt_required
+    @jwt_required()
     def delete(self, id):
         try:
             user_id=get_jwt_identity()
