@@ -8,6 +8,7 @@ from resources.errors import SchemaValidationError, ConfigurationAlreadyExistsEr
 # pylint: disable=no-member
 # pylint: disable=unused-variable
 import json
+import os
 
 
 
@@ -78,5 +79,21 @@ class ConfigurationApi(Resource):
             return Response(configurations, mimetype="application/json", status=200)
         except DoesNotExist:
             raise ConfigurationNotExistsError
+        except Exception:
+            raise InternalServerError
+
+class RunCommands(Resource):
+    @jwt_required()
+    def post(self):
+        try:
+            # os.system('cmd /c "cd C:\\Users\\marti\\Downloads & kubectl apply -f hello-deploy.yaml & kubectl apply -f hello-service.yaml "')
+            body = request.get_json()
+            command='cmd /c "cd C:\\Users\\marti\\Downloads'
+            for x in body:
+                print(x)
+                command+=' & kubectl apply -f '+x+'.yaml'
+            command+='"'
+            print(command)
+            os.system(command)
         except Exception:
             raise InternalServerError

@@ -12,6 +12,7 @@ RUN pip3 install flask-bcrypt
 RUN pip3 install flask-jwt-extended
 RUN pip3 install flask-mongoengine
 RUN pip3 install flask_restful
+RUN pip3 install flask_cors
 
 EXPOSE 5001 
 
